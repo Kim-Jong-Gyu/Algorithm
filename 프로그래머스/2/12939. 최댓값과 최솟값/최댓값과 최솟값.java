@@ -9,9 +9,6 @@ class Solution {
             intArr[i] = Integer.parseInt(split[i]);
         }
         Arrays.sort(intArr);
-        answer.append(intArr[0]);
-        answer.append(" ");
-        answer.append(intArr[intArr.length - 1]);
-        return answer.toString();
+        return intArr[0] + " " + intArr[intArr.length - 1];
     }
 }
