@@ -1,13 +1,9 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 class Main {
-
-	static char[] operator = {'+', '-', '*', '/'};
 
 	static int[] numArray;
 
@@ -23,50 +19,34 @@ class Main {
 		for (int i = 0; i < n; i++) {
 			numArray[i] = Integer.parseInt(st.nextToken());
 		}
-		ArrayList<Character> opList = new ArrayList<>();
+
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < 4; i++) {
-			int num = Integer.parseInt(st.nextToken());
-			for (int j = 0; j < num; j++) {
-				opList.add(operator[i]);
-			}
-		}
-		// 1. dfs
-		boolean[] visited = new boolean[n - 1];
-		Stack<Character> stk = new Stack<>();
-		dfs(visited, opList, 0, stk);
+
+		int plus = Integer.parseInt(st.nextToken());
+		int minus = Integer.parseInt(st.nextToken());
+		int multiply = Integer.parseInt(st.nextToken());
+		int divide = Integer.parseInt(st.nextToken());
+
+		dfs(1, numArray[0], plus, minus, multiply, divide);
+
 		System.out.println(maxRet);
 		System.out.println(minRet);
 	}
 
 	// 1. DFS
-	static private void dfs(boolean[] visited, ArrayList<Character> opList, int depth, Stack<Character> stk){
-		if (depth == opList.size()) {
-			int result = solve(stk);
-			maxRet = Math.max(result, maxRet);
-			minRet = Math.min(result, minRet);
-			return;
+	static private void dfs(int idx, int current_result, int plus, int minus, int multiply, int divide){
+		if (idx == n) {
+			maxRet = Math.max(maxRet, current_result);
+			minRet = Math.min(minRet, current_result);
 		}
-
-		for (int i = 0; i < opList.size(); i++) {
-			if(visited[i])
-				continue;
-			visited[i] = true;
-			stk.push(opList.get(i));
-			dfs(visited, opList, depth + 1, stk);
-			visited[i] = false;
-			stk.pop();
-		}
-	}
-
-	private static int solve(Stack<Character> stk) {
-		int iter = 1;
-		int ret = numArray[0];
-		for(Character ch : stk){
-			ret = calculate(ch, ret, numArray[iter]);
-			iter++;
-		}
-		return ret;
+		if(plus > 0)
+			dfs(idx + 1, calculate('+', current_result, numArray[idx]), plus - 1, minus, multiply, divide);
+		if(minus > 0)
+			dfs(idx + 1, calculate('-', current_result, numArray[idx]), plus, minus - 1, multiply, divide);
+		if(multiply > 0)
+			dfs(idx + 1, calculate('*', current_result, numArray[idx]), plus, minus, multiply -1, divide);
+		if(divide > 0)
+			dfs(idx + 1, calculate('/', current_result, numArray[idx]), plus, minus, multiply, divide - 1);
 	}
 
 	private static int calculate(Character op, int num1, int num2) {
