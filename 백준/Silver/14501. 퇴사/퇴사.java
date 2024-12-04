@@ -8,8 +8,6 @@ class Main {
 	static int n;
 	static int[][] input;
 
-	static int[][] mem;
-
 	static int[] dp;
 
 
@@ -18,7 +16,6 @@ class Main {
 		n = Integer.parseInt(br.readLine());
 
 		input = new int[n + 1][2];
-		mem = new int[n + 1][n + 1];
 		dp = new int[n + 1];
 
 		for (int i = 1; i <= n; i++) {
@@ -34,11 +31,7 @@ class Main {
 			dp[i] = dp[i - 1];
 			for (int j = 1; j <= n; j++) {
 				if(input[j][0] + j == i + 1) {
-					mem[i][j] = input[j][1] + dp[j - 1];
-					dp[i] = Math.max(dp[i], mem[i][j]);
-				}
-				else {
-					mem[i][j] = dp[i];
+					dp[i] = Math.max(dp[i], input[j][1] + dp[j - 1]);
 				}
 			}
 		}
