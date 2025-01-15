@@ -1,51 +1,54 @@
 import java.util.*;
 
 class Solution {
-    private static Map<String, Integer> parseMap;
-    public static void calTime(String in, String out, String num) {
-        String[] aArr = in.split(":");
-        String[] bArr = out.split(":");
-        int inMin = Integer.parseInt(aArr[0]) * 60 + Integer.parseInt(aArr[1]);
-        int outMin = Integer.parseInt(bArr[0]) * 60 + Integer.parseInt(bArr[1]);
-        int dif = outMin - inMin;
-        parseMap.put(num, parseMap.getOrDefault(num, 0) + dif);
-    }
-
-    public static void calFee(int[] fees) {
-        for (String key : parseMap.keySet()) {
-            if (parseMap.get(key) < fees[0]) {
-                parseMap.put(key, fees[1]);
-            } else {
-                double addTime = parseMap.get(key) - fees[0];
-                addTime = Math.ceil(addTime / fees[2]);
-                int result = (int) (addTime * fees[3] + fees[1]);
-                parseMap.put(key, result);
-            }
-        }
-    }
-
+    
     public static int[] solution(int[] fees, String[] records) {
-        parseMap = new TreeMap<>();
-        List<Integer> answer = new ArrayList<>();
-        Map<String, String> inMap = new HashMap<>();
-        for (String record : records) {
-            String[] splitRecords = record.split(" ");
-            if (splitRecords[2].equals("IN")) {
-                inMap.put(splitRecords[1], splitRecords[0]);
-            } else {
-                calTime(inMap.get(splitRecords[1]), splitRecords[0], splitRecords[1]);
-                inMap.remove(splitRecords[1]);
-            }
+        Map<String, ArrayList<String>> cars = new TreeMap<>();
+        
+        
+        for(int i = 0; i < records.length; i++){
+            String[] splitFee = records[i].split(" ");
+            ArrayList<String> tmp = cars.getOrDefault(splitFee[1], new ArrayList<String>());
+            tmp.add(splitFee[0]);
+            cars.put(splitFee[1], tmp);
         }
-        if (!inMap.isEmpty()) {
-            for (String key : inMap.keySet()) {
-                calTime(inMap.get(key), "23:59", key);
-            }
+        // return value
+        int[] ret = new int[cars.size()];
+        int num = 0;
+        for(String key : cars.keySet()){
+            ArrayList<String> li = cars.get(key);
+            int totalTime = calTime(li);
+            ret[num] = calFees(totalTime, fees);
+            num++;
         }
-        calFee(fees);
-        for (String key : parseMap.keySet()) {
-            answer.add(parseMap.get(key));
+        return ret;
+    }
+    
+    private static int calFees(int time, int[] fees){
+        int defaultFee = fees[1];
+        int extraTime = time - fees[0];
+        if(extraTime <= 0)
+            return defaultFee;
+        int extraFee = (int)Math.ceil((double) extraTime / (double) fees[2]) * fees[3];
+        return defaultFee + extraFee;
+    }
+    
+    // 개수가 홀수다 -> 나간 시간이 없다 즉, 23:59를 추가 
+    private static int calTime(ArrayList<String> time){
+        int ret = 0;
+        if((time.size() % 2) != 0){
+            time.add("23:59");
         }
-        return answer.stream().mapToInt(Integer::intValue).toArray();
+        for(int i = 1; i < time.size(); i+=2) {
+            ret += (timeToInt(time.get(i)) - timeToInt(time.get(i - 1)));
+        }
+        return ret;
+    }
+    
+    private static int timeToInt(String time){
+        String[] splitTime = time.split(":");
+        int hour = Integer.parseInt(splitTime[0]) * 60;
+        int minute = Integer.parseInt(splitTime[1]);
+        return hour + minute;
     }
 }
