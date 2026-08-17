@@ -16,7 +16,7 @@
 
 ### 문제 설명
 
-<p>One of the most important data structures in computer science is the tree. You already dealt with binary trees in the qualification round. This problem is about general trees.</p>
+<p>one.One of the most important data structures in computer science is the tree. You already dealt with binary trees in the qualification round. This problem is about general trees.</p>
 
 <p>Trees are the subset of graphs that have the following 3 properties:</p>
 
